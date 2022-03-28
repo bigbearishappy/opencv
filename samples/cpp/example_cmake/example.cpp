@@ -8,13 +8,19 @@ using namespace cv;
 using namespace std;
 
 void drawText(Mat & image);
+std::string gstreamer_pipeline(int capture_width, int capture_height, int framerate, int display_width, int display_height)
 
 int main()
 {
+    int capture_width = 2592; //1280 ;
+    int capture_height = 1944; //720 ;
+    int framerate = 30 ;
+    int display_width = 320; //1280 ;
+    int display_height = 240; //720 ;
+    
     cout << "Built with OpenCV " << CV_VERSION << endl;
     Mat image;
-    VideoCapture capture;
-    capture.open(0);
+    VideoCapture capture(pipeline, CAP_GSTREAMER);
     if(capture.isOpened())
     {
         cout << "Capture is opened" << endl;
@@ -48,3 +54,16 @@ void drawText(Mat & image)
             Scalar(255, 255, 255), // white
             1, LINE_AA); // line thickness and type
 }
+
+std::string gstreamer_pipeline(int capture_width, int capture_height, int framerate, int display_width, int display_height) {
+    return
+            " libcamerasrc ! video/x-raw, "
+            " width=" + std::to_string(capture_width) + ","
+            " height=" + std::to_string(capture_height) + ","
+            " framerate=" + std::to_string(framerate) +"/1 !"
+            " videoconvert ! videoscale ! "
+            " video/x-raw,"
+            " width=(int)" + std::to_string(display_width) + ","
+            " height=(int)" + std::to_string(display_height) + " ! appsink";
+}
+
